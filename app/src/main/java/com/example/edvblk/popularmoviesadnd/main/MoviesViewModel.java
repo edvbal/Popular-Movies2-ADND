@@ -1,27 +1,35 @@
 package com.example.edvblk.popularmoviesadnd.main;
 
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 
 import com.example.edvblk.popularmoviesadnd.utils.MessagesProvider;
-import com.example.edvblk.popularmoviesadnd.utils.architecture.ViewModelState;
+import com.example.edvblk.popularmoviesadnd.utils.mvvm.SingleLiveEvent;
+import com.example.edvblk.popularmoviesadnd.utils.mvvm.ViewModelEvent;
 import com.example.edvblk.popularmoviesadnd.utils.network.InternetChecker;
+import com.example.edvblk.popularmoviesadnd.utils.network.MoviesResultResponse;
 import com.example.edvblk.popularmoviesadnd.utils.network.MoviesService;
 
 import java.util.List;
 
 import io.reactivex.Scheduler;
+import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.functions.Consumer;
+import io.reactivex.disposables.Disposable;
 
 public class MoviesViewModel extends ViewModel {
+    public static final String KEY_SORT_POPULARITY = "key.sortPopularity";
+    public static final String KEY_SORT_RATING = "key.sortRating";
+    public static final String KEY_SORT_DEFAULT = "key.sortPopularity";
+
     private final MoviesService moviesService;
     private final InternetChecker internetChecker;
     private final MessagesProvider messagesProvider;
     private final Scheduler scheduler;
+
     private CompositeDisposable disposables = new CompositeDisposable();
-    private MutableLiveData<ViewModelState> state = new MutableLiveData<>();
+    private SingleLiveEvent<ViewModelEvent> event = new SingleLiveEvent<>();
+
 
     public MoviesViewModel(
             MoviesService moviesService, InternetChecker internetChecker,
@@ -39,65 +47,49 @@ public class MoviesViewModel extends ViewModel {
         disposables.dispose();
     }
 
-    public void loadMovies() {
+    private void onError(String errorMessage) {
+        event.setValue(new ViewModelEvent.ErrorEvent(errorMessage));
+    }
+
+    public LiveData<ViewModelEvent> getEvent() {
+        return event;
+    }
+
+    public void onItemSelected(Movie movie) {
+        event.setValue(new MovieDetailsEvent(movie));
+    }
+
+    public void loadMovies(String sortKey) {
+        if (sortKey.equals(KEY_SORT_POPULARITY)) {
+            loadMovie(moviesService.getPopularMovies());
+        } else if (sortKey.equals(KEY_SORT_RATING)) {
+            loadMovie(moviesService.getHighestRatedMovies());
+        }
+    }
+
+    private void loadMovie(Single<MoviesResultResponse<List<Movie>>> loadMoviesRequest) {
         if (!internetChecker.isInternetAvailable()) {
             onError(messagesProvider.provideNetworkErrorMessage());
             return;
         }
-        disposables.add(moviesService.getPopularMovies()
+        Disposable loadRequestDisposable = loadMoviesRequest
                 .observeOn(scheduler)
-                .doOnSubscribe(disposable -> state.setValue(new ViewModelState.LoadingState(true)))
-                .doOnError(throwable -> state.setValue(new ViewModelState.LoadingState(false)))
-                .doOnSuccess(disposable -> state.setValue(new ViewModelState.LoadingState(false)))
+                .doOnSubscribe(disposable -> event.setValue(new ViewModelEvent.LoadingEvent(true)))
+                .doOnError(throwable -> event.setValue(new ViewModelEvent.LoadingEvent(false)))
                 .subscribe(
-                        movies -> state.setValue(new MoviesListState(movies.getResult())),
+                        movies -> {
+                            event.setValue(new MoviesListEvent(movies.getResult()));
+                            event.setValue(new ViewModelEvent.LoadingEvent(false));
+                        },
                         throwable -> onError(messagesProvider.provideEmptyMoviesListMessage())
-                )
-        );
+                );
+        disposables.add(loadRequestDisposable);
     }
 
-    private void onError(String errorMessage) {
-        state.setValue(new ViewModelState.ErrorState(errorMessage));
-    }
-
-    public LiveData<ViewModelState> getState() {
-        return state;
-    }
-
-    public void onItemSelected(Movie movie) {
-        state.setValue(new MovieDetailsState(movie));
-    }
-
-    public void loadHighestRated() {
-        disposables.add(moviesService.getHighestRatedMovies()
-                .observeOn(scheduler)
-                .doOnSubscribe(disposable -> state.setValue(new ViewModelState.LoadingState(true)))
-                .doOnError(throwable -> state.setValue(new ViewModelState.LoadingState(false)))
-                .doOnSuccess(disposable -> state.setValue(new ViewModelState.LoadingState(false)))
-                .subscribe(
-                        movies -> state.setValue(new MoviesListState(movies.getResult())),
-                        throwable -> onError(messagesProvider.provideEmptyMoviesListMessage())
-                )
-        );
-    }
-
-    public void loadMostPopular() {
-        disposables.add(moviesService.getPopularMovies()
-                .observeOn(scheduler)
-                .doOnSubscribe(disposable -> state.setValue(new ViewModelState.LoadingState(true)))
-                .doOnError(throwable -> state.setValue(new ViewModelState.LoadingState(false)))
-                .doOnSuccess(disposable -> state.setValue(new ViewModelState.LoadingState(false)))
-                .subscribe(
-                        movies -> state.setValue(new MoviesListState(movies.getResult())),
-                        throwable -> onError(messagesProvider.provideEmptyMoviesListMessage())
-                )
-        );
-    }
-
-    public final class MoviesListState extends ViewModelState {
+    public final class MoviesListEvent extends ViewModelEvent {
         private final List<Movie> movies;
 
-        MoviesListState(List<Movie> movies) {
+        MoviesListEvent(List<Movie> movies) {
             this.movies = movies;
         }
 
@@ -106,10 +98,10 @@ public class MoviesViewModel extends ViewModel {
         }
     }
 
-    public final class MovieDetailsState extends ViewModelState {
+    public final class MovieDetailsEvent extends ViewModelEvent {
         private final Movie movie;
 
-        MovieDetailsState(Movie movie) {
+        MovieDetailsEvent(Movie movie) {
             this.movie = movie;
         }
 

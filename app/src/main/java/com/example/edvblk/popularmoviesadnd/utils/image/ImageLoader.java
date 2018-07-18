@@ -4,4 +4,6 @@ import android.view.View;
 
 public interface ImageLoader {
     void loadImageFromUrl(View imageView, String url);
+
+    void stopLoading(View imageView);
 }

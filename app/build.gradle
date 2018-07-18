@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion 28
@@ -58,6 +59,7 @@ dependencies {
 
     implementation "android.arch.lifecycle:extensions:$androidArchitectureVersion"
     annotationProcessor "android.arch.lifecycle:compiler:$androidArchitectureVersion"
+    implementation "android.arch.lifecycle:runtime:$androidArchitectureVersion"
 
     implementation "android.arch.persistence.room:runtime:$roomVersion"
     implementation "android.arch.persistence.room:rxjava2:$roomVersion"
@@ -66,4 +68,8 @@ dependencies {
     testImplementation 'org.mockito:mockito-core:' + mockitoVersion
     testImplementation 'org.mockito:mockito-inline:' + mockitoVersion
     testImplementation 'junit:junit:4.12'
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+}
+repositories {
+    mavenCentral()
 }

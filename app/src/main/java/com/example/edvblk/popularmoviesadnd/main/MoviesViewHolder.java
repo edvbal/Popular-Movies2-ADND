@@ -38,6 +38,11 @@ public class MoviesViewHolder extends BaseViewHolder<Movie> {
         imageLoader.loadImageFromUrl(imageView, imageUrlProvider.provideUrl(posterPath));
     }
 
+    @Override
+    protected void onRecycle() {
+        imageLoader.stopLoading(imageView);
+    }
+
     @OnClick(R.id.imageView)
     public void onImageClick() {
         listener.onItemClick(getItem());

@@ -20,4 +20,9 @@ public class GlideImageLoader implements ImageLoader {
                 .load(url)
                 .into((ImageView) view);
     }
+
+    @Override
+    public void stopLoading(View view) {
+        requestManager.clear(view);
+    }
 }

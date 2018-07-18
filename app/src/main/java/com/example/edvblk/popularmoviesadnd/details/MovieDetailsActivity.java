@@ -1,13 +1,11 @@
 package com.example.edvblk.popularmoviesadnd.details;
 
-import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -15,7 +13,6 @@ import android.widget.TextView;
 import com.example.edvblk.popularmoviesadnd.main.Movie;
 import com.example.edvblk.popularmoviesadnd.R;
 import com.example.edvblk.popularmoviesadnd.base.BaseActivity;
-import com.example.edvblk.popularmoviesadnd.utils.architecture.ViewModelState;
 import com.example.edvblk.popularmoviesadnd.utils.image.DefaultImageUrlProvider;
 import com.example.edvblk.popularmoviesadnd.utils.image.GlideImageLoader;
 import com.example.edvblk.popularmoviesadnd.utils.image.ImageUrlProvider;
@@ -51,9 +48,9 @@ public class MovieDetailsActivity extends BaseActivity {
         setSupportActionBar(toolbar);
         setHomeAsUp();
         initFields();
-        detailsViewModel.getMovieDetailsStates().observe(this, state -> {
-            if (state instanceof MovieDetailsViewModel.MovieDetailState) {
-                Movie movie = ((MovieDetailsViewModel.MovieDetailState) state).getMovieDetails();
+        detailsViewModel.getMovieDetailsEvents().observe(this, state -> {
+            if (state instanceof MovieDetailsViewModel.MovieDetailEvent) {
+                Movie movie = ((MovieDetailsViewModel.MovieDetailEvent) state).getMovieDetails();
                 showMovieDetails(movie);
             }
         });

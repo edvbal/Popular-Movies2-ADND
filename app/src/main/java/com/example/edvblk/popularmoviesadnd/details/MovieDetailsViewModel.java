@@ -6,14 +6,14 @@ import android.arch.lifecycle.ViewModel;
 
 import com.example.edvblk.popularmoviesadnd.main.Movie;
 import com.example.edvblk.popularmoviesadnd.utils.MessagesProvider;
-import com.example.edvblk.popularmoviesadnd.utils.architecture.ViewModelState;
+import com.example.edvblk.popularmoviesadnd.utils.mvvm.ViewModelEvent;
 
 import io.reactivex.annotations.Nullable;
 
 class MovieDetailsViewModel extends ViewModel {
     private final MessagesProvider messagesProvider;
 
-    private MutableLiveData<ViewModelState> mutableStates = new MutableLiveData<>();
+    private MutableLiveData<ViewModelEvent> mutableStates = new MutableLiveData<>();
 
     MovieDetailsViewModel(MessagesProvider messagesProvider) {
         this.messagesProvider = messagesProvider;
@@ -22,16 +22,16 @@ class MovieDetailsViewModel extends ViewModel {
     public void onMovieSelected(@Nullable Movie movie) {
         if (movie == null) {
             String errorMessage = messagesProvider.provideEmptyMovieDetailsMessage();
-            mutableStates.setValue(new ViewModelState.ErrorState(errorMessage));
+            mutableStates.setValue(new ViewModelEvent.ErrorEvent(errorMessage));
         } else {
-            mutableStates.setValue(new MovieDetailState(movie));
+            mutableStates.setValue(new MovieDetailEvent(movie));
         }
     }
 
-    public final class MovieDetailState extends ViewModelState {
+    public final class MovieDetailEvent extends ViewModelEvent {
         private final Movie movieDetails;
 
-        MovieDetailState(Movie movieDetails) {
+        MovieDetailEvent(Movie movieDetails) {
             this.movieDetails = movieDetails;
         }
 
@@ -40,14 +40,14 @@ class MovieDetailsViewModel extends ViewModel {
         }
     }
 
-    public LiveData<ViewModelState> getMovieDetailsStates() {
+    public LiveData<ViewModelEvent> getMovieDetailsEvents() {
         return mutableStates;
     }
 
-    public final class MovieDetailsState extends ViewModelState {
+    public final class MovieDetailsEvent extends ViewModelEvent {
         private final Movie details;
 
-        public MovieDetailsState(Movie details) {
+        public MovieDetailsEvent(Movie details) {
             this.details = details;
         }
 

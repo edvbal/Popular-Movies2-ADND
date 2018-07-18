@@ -1,10 +1,10 @@
-package com.example.edvblk.popularmoviesadnd.utils.architecture;
+package com.example.edvblk.popularmoviesadnd.utils.mvvm;
 
-public class ViewModelState {
-    public static final class LoadingState extends ViewModelState {
+public class ViewModelEvent {
+    public static final class LoadingEvent extends ViewModelEvent {
         private final boolean isLoading;
 
-        public LoadingState(boolean isLoading) {
+        public LoadingEvent(boolean isLoading) {
             this.isLoading = isLoading;
         }
 
@@ -13,10 +13,10 @@ public class ViewModelState {
         }
     }
 
-    public static final class ErrorState extends ViewModelState {
+    public static final class ErrorEvent extends ViewModelEvent {
         private final String errorMessage;
 
-        public ErrorState(String errorMessage) {
+        public ErrorEvent(String errorMessage) {
             this.errorMessage = errorMessage;
         }
 
