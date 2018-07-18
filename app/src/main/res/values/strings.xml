@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">PopularMoviesADND</string>
+    <string name="error_no_network">Please check if your internet is connected</string>
+    <string name="error_empty_movies_list">Couldn\'t load movie list from server</string>
+    <string name="error_empty_movie_details">Couldn\'t load movie details</string>
+    <string name="main_menu_title_rated">Highest rated</string>
+    <string name="main_menu_title_popular">Most popular</string>
+</resources>

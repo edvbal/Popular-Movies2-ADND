@@ -1,0 +1,69 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 28
+    defaultConfig {
+        applicationId "com.example.edvblk.popularmoviesadnd"
+        minSdkVersion 21
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        buildConfigField "String", "API_BASE_URL", THE_MOVIE_DB_BASE_URL
+        buildConfigField "String", "HIGHEST_RATED_MOVIES", THE_MOVIE_DB_SORT_RATINGS
+        buildConfigField "String", "POPULAR_MOVIES", THE_MOVIE_DB_SORT_POPULARITY
+        buildConfigField "String", "IMAGES_BASE_URL", THE_MOVIE_DB_IMAGES_BASE_URL
+        buildConfigField "String", "API_KEY", THE_MOVIE_DB_API_KEY
+        buildConfigField "String", "API_VERSION", THE_MOVIE_DB_API_VERSION
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        targetCompatibility 1.8
+        sourceCompatibility 1.8
+    }
+}
+def retrofitVersion = '2.3.0'
+def butterKnifeVersion = '8.8.1'
+def okHttpVersion = '3.9.1'
+def supportVersion = '27.0.2'
+def glideVersion = '4.3.1'
+def mockitoVersion = "2.13.0"
+def androidArchitectureVersion = "1.1.1"
+def roomVersion = "1.1.1"
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support:appcompat-v7:' + supportVersion
+    implementation 'com.android.support:design:' + supportVersion
+    implementation 'com.android.support:cardview-v7:' + supportVersion
+
+    implementation 'com.squareup.okhttp3:logging-interceptor:' + okHttpVersion
+
+    implementation 'com.squareup.retrofit2:retrofit:' + retrofitVersion
+    implementation 'com.squareup.retrofit2:converter-gson:' + retrofitVersion
+    implementation 'com.squareup.retrofit2:retrofit:' + retrofitVersion
+    implementation 'com.squareup.retrofit2:adapter-rxjava2:' + retrofitVersion
+
+    implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
+    implementation 'io.reactivex.rxjava2:rxjava:2.1.12'
+
+    implementation 'com.github.bumptech.glide:glide:' + glideVersion
+
+    implementation 'com.jakewharton:butterknife:' + butterKnifeVersion
+    annotationProcessor 'com.jakewharton:butterknife-compiler:' + butterKnifeVersion
+
+    implementation "android.arch.lifecycle:extensions:$androidArchitectureVersion"
+    annotationProcessor "android.arch.lifecycle:compiler:$androidArchitectureVersion"
+
+    implementation "android.arch.persistence.room:runtime:$roomVersion"
+    implementation "android.arch.persistence.room:rxjava2:$roomVersion"
+    annotationProcessor "android.arch.persistence.room:compiler:$roomVersion"
+
+    testImplementation 'org.mockito:mockito-core:' + mockitoVersion
+    testImplementation 'org.mockito:mockito-inline:' + mockitoVersion
+    testImplementation 'junit:junit:4.12'
+}
