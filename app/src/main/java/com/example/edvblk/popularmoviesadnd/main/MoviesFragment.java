@@ -38,6 +38,7 @@ public class MoviesFragment extends Fragment {
     private ErrorProvider errorProvider;
     private String selectedSortId = KEY_SORT_DEFAULT;
     private Unbinder unbinder;
+
     private static final String KEY_SORT = "key.sort";
     private static final String KEY_LIST_STATE = "key.listState";
 
@@ -82,13 +83,6 @@ public class MoviesFragment extends Fragment {
         } else {
             moviesViewModel.loadMovies(selectedSortId);
         }
-
-    }
-
-    private void initFields() {
-        initViewModel();
-        initAdapter();
-        initRecycler();
     }
 
     private void initViewModel() {
