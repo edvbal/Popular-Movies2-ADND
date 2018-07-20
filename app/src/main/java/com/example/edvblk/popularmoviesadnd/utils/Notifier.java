@@ -1,5 +1,7 @@
 package com.example.edvblk.popularmoviesadnd.utils;
 
-public interface ErrorProvider {
+public interface Notifier {
     void showError(String message);
+
+    void showSuccess(String message);
 }

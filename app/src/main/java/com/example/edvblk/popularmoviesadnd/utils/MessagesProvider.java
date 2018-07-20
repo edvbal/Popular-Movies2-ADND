@@ -6,4 +6,12 @@ public interface MessagesProvider {
     String provideEmptyMoviesListMessage();
 
     String provideEmptyMovieDetailsMessage();
+
+    String provideRepoWriteFailureMessage();
+
+    String provideRepoReadFailureMessage();
+
+    String provideRepoWriteSuccessMessage();
+
+    String provideMovieAlreadyFavoriteMessage();
 }

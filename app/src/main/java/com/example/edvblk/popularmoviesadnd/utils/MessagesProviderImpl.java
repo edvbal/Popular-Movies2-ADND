@@ -25,4 +25,23 @@ public class MessagesProviderImpl implements MessagesProvider {
     public String provideEmptyMovieDetailsMessage() {
         return resources.getString(R.string.error_empty_movies_list);
     }
+
+    @Override
+    public String provideRepoWriteFailureMessage() {
+        return resources.getString(R.string.error_repository_write_failure);
+    }
+
+    @Override
+    public String provideRepoReadFailureMessage() {
+        return resources.getString(R.string.error_repository_read_failure);
+    }
+
+    @Override
+    public String provideRepoWriteSuccessMessage() {
+        return resources.getString(R.string.error_repository_write_success);
+    }
+    @Override
+    public String provideMovieAlreadyFavoriteMessage() {
+        return resources.getString(R.string.error_repository_write_success);
+    }
 }

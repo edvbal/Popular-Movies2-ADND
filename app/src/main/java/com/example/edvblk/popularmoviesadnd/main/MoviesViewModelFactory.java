@@ -4,12 +4,18 @@ import android.arch.lifecycle.ViewModelProvider;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import com.example.edvblk.popularmoviesadnd.data.database.MovieDao;
+import com.example.edvblk.popularmoviesadnd.data.database.MovieEntityListMapper;
+import com.example.edvblk.popularmoviesadnd.data.database.MovieEntityMapper;
+import com.example.edvblk.popularmoviesadnd.data.repository.DefaultMovieRepository;
 import com.example.edvblk.popularmoviesadnd.utils.MessagesProviderImpl;
 import com.example.edvblk.popularmoviesadnd.base.BaseApplication;
 import com.example.edvblk.popularmoviesadnd.utils.network.DefaultInternetChecker;
 import com.example.edvblk.popularmoviesadnd.utils.network.MoviesService;
 
+import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import retrofit2.Retrofit;
 
 public class MoviesViewModelFactory implements ViewModelProvider.Factory {
@@ -23,14 +29,20 @@ public class MoviesViewModelFactory implements ViewModelProvider.Factory {
     @Override
     public MoviesViewModel create(@NonNull Class modelClass) {
         Retrofit retrofit = BaseApplication.getRetrofit(context);
+        MovieDao movieDao = BaseApplication.getDatabase(context).movieDao();
         MoviesService service = retrofit.create(MoviesService.class);
         DefaultInternetChecker internetChecker = new DefaultInternetChecker(context);
         MessagesProviderImpl messagesProvider = new MessagesProviderImpl(context.getResources());
+        Scheduler scheduler = Schedulers.computation();
+        MovieEntityMapper mapper = new MovieEntityMapper();
+        DefaultMovieRepository repository = new DefaultMovieRepository(movieDao, scheduler, mapper);
         return new MoviesViewModel(
                 service,
                 internetChecker,
                 messagesProvider,
-                AndroidSchedulers.mainThread()
+                AndroidSchedulers.mainThread(),
+                repository,
+                new MovieEntityListMapper()
         );
     }
 }

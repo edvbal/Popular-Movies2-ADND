@@ -19,7 +19,6 @@ import static com.example.edvblk.popularmoviesadnd.main.MainContract.Model;
 import static com.example.edvblk.popularmoviesadnd.main.MainContract.View;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 public class MoviesViewModelTest {
@@ -40,7 +39,7 @@ public class MoviesViewModelTest {
         model = mock(Model.class);
         internetChecker = mock(InternetChecker.class);
         messagesProvider = mock(MessagesProvider.class);
-        presenter = new MoviesViewModel(model, service, internetChecker, messagesProvider, scheduler);
+        presenter = new MoviesViewModel(model, service, internetChecker, messagesProvider, scheduler, movieEntityMapper, asd, mapper);
         presenter.takeView(view);
         when(messagesProvider.provideNetworkErrorMessage()).thenReturn(DEFAULT_ERROR_MESSAGE);
         when(messagesProvider.provideEmptyMoviesListMessage()).thenReturn(DEFAULT_ERROR_MESSAGE);
@@ -116,7 +115,7 @@ public class MoviesViewModelTest {
     public void onItemSelected_callView() {
         Movie movie = new Movie("posterPath", releaseDate, averageVote, overView, title);
 
-        presenter.onItemSelected(movie);
+        presenter.onMovieClicked(movie);
 
         verify(view).openDetailsActivity(movie);
     }

@@ -3,6 +3,7 @@ package com.example.edvblk.popularmoviesadnd.main;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.example.edvblk.popularmoviesadnd.data.database.MovieEntity;
 import com.google.gson.annotations.SerializedName;
 
 public class Movie implements Parcelable {
@@ -15,7 +16,13 @@ public class Movie implements Parcelable {
     private final String overview;
     private final String title;
 
-    Movie(String posterPath, String releaseDate, double averageVote, String plot, String title) {
+    public Movie(
+            String posterPath,
+            String releaseDate,
+            double averageVote,
+            String plot,
+            String title
+    ) {
         this.posterPath = posterPath;
         this.releaseDate = releaseDate;
         this.averageVote = averageVote;
