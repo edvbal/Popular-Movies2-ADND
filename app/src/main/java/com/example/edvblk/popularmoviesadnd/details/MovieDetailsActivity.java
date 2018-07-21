@@ -3,6 +3,7 @@ package com.example.edvblk.popularmoviesadnd.details;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -11,7 +12,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.edvblk.popularmoviesadnd.main.Movie;
+import com.example.edvblk.popularmoviesadnd.data.pojos.Movie;
 import com.example.edvblk.popularmoviesadnd.R;
 import com.example.edvblk.popularmoviesadnd.base.BaseActivity;
 import com.example.edvblk.popularmoviesadnd.utils.Notifier;
@@ -63,6 +64,7 @@ public class MovieDetailsActivity extends BaseActivity {
         if (extras != null && savedInstanceState == null) {
             detailsViewModel.onMovieSelected((Movie) extras.get(INTENT_EXTRA_KEY_MOVIE));
         }
+//        mActivity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v=" + video.getKey())))
     }
 
     private void setFavoriteImageView(Boolean isFavorited) {

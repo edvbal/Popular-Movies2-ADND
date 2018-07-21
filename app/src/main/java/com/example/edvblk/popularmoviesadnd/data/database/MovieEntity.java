@@ -8,7 +8,7 @@ import android.support.annotation.NonNull;
 public final class MovieEntity {
     @NonNull
     @PrimaryKey
-    private final String id;
+    private final int id;
     @NonNull
     private final String title;
     @NonNull
@@ -21,7 +21,8 @@ public final class MovieEntity {
     private final String overview;
 
     public MovieEntity(
-            @NonNull String id, String title,
+            @NonNull int id,
+            String title,
             String posterPath,
             String releaseDate,
             double averageVote,
@@ -56,7 +57,7 @@ public final class MovieEntity {
     }
 
     @NonNull
-    public String getId() {
+    public int getId() {
         return id;
     }
 }

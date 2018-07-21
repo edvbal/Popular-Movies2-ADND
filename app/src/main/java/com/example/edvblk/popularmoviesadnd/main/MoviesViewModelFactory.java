@@ -7,7 +7,8 @@ import android.support.annotation.NonNull;
 import com.example.edvblk.popularmoviesadnd.data.database.MovieDao;
 import com.example.edvblk.popularmoviesadnd.data.database.MovieEntityListMapper;
 import com.example.edvblk.popularmoviesadnd.data.database.MovieEntityMapper;
-import com.example.edvblk.popularmoviesadnd.data.repository.DefaultMovieRepository;
+import com.example.edvblk.popularmoviesadnd.data.repository.DefaultOfflineRepository;
+import com.example.edvblk.popularmoviesadnd.data.repository.DefaultOnlineRepository;
 import com.example.edvblk.popularmoviesadnd.utils.MessagesProviderImpl;
 import com.example.edvblk.popularmoviesadnd.base.BaseApplication;
 import com.example.edvblk.popularmoviesadnd.utils.network.DefaultInternetChecker;
@@ -35,13 +36,13 @@ public class MoviesViewModelFactory implements ViewModelProvider.Factory {
         MessagesProviderImpl messagesProvider = new MessagesProviderImpl(context.getResources());
         Scheduler scheduler = Schedulers.computation();
         MovieEntityMapper mapper = new MovieEntityMapper();
-        DefaultMovieRepository repository = new DefaultMovieRepository(movieDao, scheduler, mapper);
+        DefaultOfflineRepository repository = new DefaultOfflineRepository(movieDao, scheduler, mapper);
         return new MoviesViewModel(
-                service,
                 internetChecker,
                 messagesProvider,
                 AndroidSchedulers.mainThread(),
                 repository,
+                new DefaultOnlineRepository(service),
                 new MovieEntityListMapper()
         );
     }

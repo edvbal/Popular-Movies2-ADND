@@ -1,4 +1,4 @@
-package com.example.edvblk.popularmoviesadnd.main;
+package com.example.edvblk.popularmoviesadnd.data.pojos;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -6,8 +6,8 @@ import android.os.Parcelable;
 import com.example.edvblk.popularmoviesadnd.data.database.MovieEntity;
 import com.google.gson.annotations.SerializedName;
 
-public class Movie implements Parcelable {
-    private final String id;
+public final class Movie implements Parcelable {
+    private final int id;
     @SerializedName("poster_path")
     private final String posterPath;
     @SerializedName("release_date")
@@ -18,7 +18,7 @@ public class Movie implements Parcelable {
     private final String title;
 
     public Movie(
-            String id,
+            int id,
             String posterPath,
             String releaseDate,
             double averageVote,
@@ -34,7 +34,7 @@ public class Movie implements Parcelable {
     }
 
     private Movie(Parcel in) {
-        id = in.readString();
+        id = in.readInt();
         posterPath = in.readString();
         overview = in.readString();
         releaseDate = in.readString();
@@ -56,7 +56,8 @@ public class Movie implements Parcelable {
 
     public MovieEntity toEntity() {
         return new MovieEntity(
-                id, this.title,
+                id,
+                this.title,
                 this.posterPath,
                 this.releaseDate,
                 this.averageVote,
@@ -64,7 +65,7 @@ public class Movie implements Parcelable {
         );
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
@@ -95,7 +96,7 @@ public class Movie implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int flags) {
-        parcel.writeString(id);
+        parcel.writeInt(id);
         parcel.writeString(posterPath);
         parcel.writeString(overview);
         parcel.writeString(releaseDate);

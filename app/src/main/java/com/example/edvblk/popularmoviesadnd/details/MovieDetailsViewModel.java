@@ -5,8 +5,9 @@ import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.util.Log;
 
-import com.example.edvblk.popularmoviesadnd.data.repository.MovieRepository;
-import com.example.edvblk.popularmoviesadnd.main.Movie;
+import com.example.edvblk.popularmoviesadnd.data.repository.OfflineRepository;
+import com.example.edvblk.popularmoviesadnd.data.pojos.Movie;
+import com.example.edvblk.popularmoviesadnd.data.repository.OnlineRepository;
 import com.example.edvblk.popularmoviesadnd.utils.Mapper;
 import com.example.edvblk.popularmoviesadnd.utils.MessagesProvider;
 import com.example.edvblk.popularmoviesadnd.utils.mvvm.SingleLiveEvent;
@@ -15,13 +16,14 @@ import io.reactivex.Scheduler;
 import io.reactivex.SingleSource;
 import io.reactivex.annotations.Nullable;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.functions.BiFunction;
 
 class MovieDetailsViewModel extends ViewModel {
     private final MessagesProvider messagesProvider;
-    private final MovieRepository movieRepository;
+    private final OfflineRepository offlineRepository;
+    private final OnlineRepository onlineRepository;
     private final Scheduler scheduler;
     private MutableLiveData<String> errorState = new SingleLiveEvent<>();
+    private MutableLiveData<String> progressState = new SingleLiveEvent<>();
     private MutableLiveData<Movie> movieDetailsState = new MutableLiveData<>();
     private MutableLiveData<String> favoriteState = new MutableLiveData<>();
     private MutableLiveData<Boolean> favoriteImageState = new SingleLiveEvent<>();
@@ -29,24 +31,33 @@ class MovieDetailsViewModel extends ViewModel {
 
     MovieDetailsViewModel(
             MessagesProvider messagesProvider,
-            MovieRepository movieRepository,
-            Scheduler scheduler) {
+            OfflineRepository offlineRepository,
+            OnlineRepository onlineRepository,
+            Scheduler scheduler
+    ) {
         this.messagesProvider = messagesProvider;
-        this.movieRepository = movieRepository;
+        this.offlineRepository = offlineRepository;
+        this.onlineRepository = onlineRepository;
         this.scheduler = scheduler;
     }
 
     public void onMovieSelected(@Nullable Movie movie) {
+        String errorMessage = messagesProvider.provideEmptyMovieDetailsMessage();
         if (movie == null) {
-            String errorMessage = messagesProvider.provideEmptyMovieDetailsMessage();
             errorState.setValue(errorMessage);
         } else {
-            movieDetailsState.setValue(movie);
-            disposables.add(movieRepository.isMovieInFavorites(movie.getTitle())
+            disposables.add(offlineRepository.isMovieInFavorites(movie.getTitle())
                     .observeOn(scheduler)
-                    .subscribe(doesMovieExist -> favoriteImageState.postValue(doesMovieExist))
-            );
+                    .subscribe(doesMovieExist -> onDetailsReady(movie, doesMovieExist),
+                            throwable -> errorState.postValue(errorMessage)));
+//            disposables.add(onlineRepository.)
         }
+
+    }
+
+    private void onDetailsReady(@Nullable Movie movie, Boolean doesMovieExist) {
+        favoriteImageState.postValue(doesMovieExist);
+        movieDetailsState.setValue(movie);
     }
 
     public LiveData<Movie> getMovieDetailsState() {
@@ -63,13 +74,13 @@ class MovieDetailsViewModel extends ViewModel {
 
     public void onFavoriteSelected(Movie movie) {
         String title = movie.getTitle();
-        disposables.add(movieRepository.isMovieInFavorites(title)
+        disposables.add(offlineRepository.isMovieInFavorites(title)
                 .observeOn(scheduler)
                 .flatMap((Mapper<Boolean, SingleSource<?>>) doesMovieExist -> {
                     if (doesMovieExist) {
-                        return movieRepository.deleteMovieFromFavorites(movie.toEntity());
+                        return offlineRepository.deleteMovieFromFavorites(movie.toEntity());
                     } else {
-                        return movieRepository.insertMovieToFavorites(movie);
+                        return offlineRepository.insertMovieToFavorites(movie);
                     }
                 }).subscribe(number -> {
                     if (number instanceof Integer) {
@@ -82,7 +93,7 @@ class MovieDetailsViewModel extends ViewModel {
                 })
         );
 
-        disposables.add(movieRepository.insertMovieToFavorites(movie)
+        disposables.add(offlineRepository.insertMovieToFavorites(movie)
                 .observeOn(scheduler)
                 .subscribe(this::onInsertSuccess, this::onInsertError)
         );

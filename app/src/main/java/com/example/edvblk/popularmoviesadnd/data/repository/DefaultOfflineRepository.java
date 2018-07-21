@@ -5,22 +5,20 @@ import android.arch.lifecycle.LiveData;
 import com.example.edvblk.popularmoviesadnd.data.database.MovieDao;
 import com.example.edvblk.popularmoviesadnd.data.database.MovieEntity;
 import com.example.edvblk.popularmoviesadnd.data.database.MovieEntityMapper;
-import com.example.edvblk.popularmoviesadnd.main.Movie;
+import com.example.edvblk.popularmoviesadnd.data.pojos.Movie;
 import com.example.edvblk.popularmoviesadnd.utils.Mapper;
 
 import java.util.List;
-import java.util.concurrent.Callable;
 
-import io.reactivex.Completable;
 import io.reactivex.Scheduler;
 import io.reactivex.Single;
 
-public final class DefaultMovieRepository implements MovieRepository {
+public final class DefaultOfflineRepository implements OfflineRepository {
     private final MovieDao movieDao;
     private final Scheduler scheduler;
     private final MovieEntityMapper movieEntityMapper;
 
-    public DefaultMovieRepository(
+    public DefaultOfflineRepository(
             MovieDao movieDao,
             Scheduler scheduler,
             MovieEntityMapper movieEntityMapper

@@ -8,46 +8,48 @@ import android.util.Log;
 
 import com.example.edvblk.popularmoviesadnd.data.database.MovieEntity;
 import com.example.edvblk.popularmoviesadnd.data.database.MovieEntityListMapper;
-import com.example.edvblk.popularmoviesadnd.data.repository.MovieRepository;
+import com.example.edvblk.popularmoviesadnd.data.pojos.Movie;
+import com.example.edvblk.popularmoviesadnd.data.repository.OfflineRepository;
+import com.example.edvblk.popularmoviesadnd.data.repository.OnlineRepository;
 import com.example.edvblk.popularmoviesadnd.utils.MessagesProvider;
 import com.example.edvblk.popularmoviesadnd.utils.mvvm.SingleLiveEvent;
 import com.example.edvblk.popularmoviesadnd.utils.network.InternetChecker;
-import com.example.edvblk.popularmoviesadnd.utils.network.MoviesResultResponse;
-import com.example.edvblk.popularmoviesadnd.utils.network.MoviesService;
 
 import java.util.List;
 
 import io.reactivex.Scheduler;
-import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
 
 public class MoviesViewModel extends ViewModel {
     public static final String CLASS_TAG = MoviesViewModel.class.getSimpleName();
-    private final MoviesService moviesService;
     private final InternetChecker internetChecker;
     private final MessagesProvider messagesProvider;
     private final Scheduler scheduler;
-    private final MovieRepository repository;
+    private final OfflineRepository offlineRepository;
+    private final OnlineRepository onlineRepository;
     private final MovieEntityListMapper entityMapper;
+
     private CompositeDisposable disposables = new CompositeDisposable();
     private MutableLiveData<String> errorState = new SingleLiveEvent<>();
     private MutableLiveData<Movie> detailsState = new SingleLiveEvent<>();
-    private MutableLiveData<List<Movie>> moviesState = new MutableLiveData<>();
     private MutableLiveData<Boolean> progressState = new MutableLiveData<>();
-    private MediatorLiveData<List<Movie>> favoritesState = new MediatorLiveData<>();
+    private MutableLiveData<List<Movie>> popularMoviesState = new MutableLiveData<>();
+    private MutableLiveData<List<Movie>> highestRatedMoviesState = new MutableLiveData<>();
+    private MediatorLiveData<List<Movie>> favoriteMoviesState = new MediatorLiveData<>();
 
     public MoviesViewModel(
-            MoviesService moviesService, InternetChecker internetChecker,
+            InternetChecker internetChecker,
             MessagesProvider messagesProvider,
             Scheduler scheduler,
-            MovieRepository repository,
+            OfflineRepository offlineRepository,
+            OnlineRepository onlineRepository,
             MovieEntityListMapper entityMapper
     ) {
-        this.moviesService = moviesService;
         this.internetChecker = internetChecker;
         this.messagesProvider = messagesProvider;
         this.scheduler = scheduler;
-        this.repository = repository;
+        this.offlineRepository = offlineRepository;
+        this.onlineRepository = onlineRepository;
         this.entityMapper = entityMapper;
         loadMoviesByPopularity();
     }
@@ -60,16 +62,20 @@ public class MoviesViewModel extends ViewModel {
         return detailsState;
     }
 
-    public LiveData<List<Movie>> getMoviesState() {
-        return moviesState;
+    public LiveData<List<Movie>> getPopularMoviesState() {
+        return popularMoviesState;
+    }
+
+    public LiveData<List<Movie>> getHighestRatedMoviesState() {
+        return highestRatedMoviesState;
+    }
+
+    public LiveData<List<Movie>> getFavoriteMoviesState() {
+        return favoriteMoviesState;
     }
 
     public LiveData<Boolean> getProgressState() {
         return progressState;
-    }
-
-    public LiveData<List<Movie>> getFavoritesState() {
-        return favoritesState;
     }
 
     @Override
@@ -78,29 +84,27 @@ public class MoviesViewModel extends ViewModel {
     }
 
     public void loadMoviesByPopularity() {
-        loadMovie(moviesService.getPopularMovies());
-    }
-
-    public void loadMoviesByRatings() {
-        loadMovie(moviesService.getHighestRatedMovies());
-    }
-
-    private void loadMovie(Single<MoviesResultResponse<List<Movie>>> loadMoviesRequest) {
         if (!internetChecker.isInternetAvailable()) {
             errorState.setValue(messagesProvider.provideNetworkErrorMessage());
             return;
         }
-        disposables.add(loadMoviesRequest
+        disposables.add(onlineRepository.getPopularMovies()
                 .observeOn(scheduler)
-                .doOnSubscribe(disposable -> progressState.setValue(true))
-                .subscribe(
-                        this::onRequestSuccess,
-                        this::onRequestError
-                ));
+                .subscribe(this::onPopularMoviesRequestSuccess, this::onRequestError));
     }
 
-    public void loadMoviesFromRepository() {
-        disposables.add(repository.getMovies()
+    public void loadMoviesByRatings() {
+        if (!internetChecker.isInternetAvailable()) {
+            errorState.setValue(messagesProvider.provideNetworkErrorMessage());
+            return;
+        }
+        disposables.add(onlineRepository.getHighestRatedMovies()
+                .observeOn(scheduler)
+                .subscribe(this::onHighestRatedMoviesRequestSuccess, this::onRequestError));
+    }
+
+    public void loadFavoriteMovies() {
+        disposables.add(offlineRepository.getMovies()
                 .observeOn(scheduler)
                 .doOnSubscribe(disposable -> progressState.postValue(true))
                 .subscribe(
@@ -117,21 +121,26 @@ public class MoviesViewModel extends ViewModel {
     }
 
     private void onRepositorySuccess(LiveData<List<MovieEntity>> listLiveData) {
-        favoritesState.addSource(listLiveData, movieEntities -> {
+        favoriteMoviesState.addSource(listLiveData, movieEntities -> {
             if (movieEntities == null) return;
-            favoritesState.postValue(entityMapper.apply(movieEntities));
+            favoriteMoviesState.postValue(entityMapper.apply(movieEntities));
         });
         progressState.postValue(false);
+    }
+
+    private void onPopularMoviesRequestSuccess(List<Movie> movies) {
+        popularMoviesState.setValue(movies);
+        progressState.setValue(false);
+    }
+
+    private void onHighestRatedMoviesRequestSuccess(List<Movie> movies) {
+        highestRatedMoviesState.setValue(movies);
+        progressState.setValue(false);
     }
 
     private void onRequestError(Throwable throwable) {
         Log.e(CLASS_TAG, throwable.getMessage());
         errorState.setValue(messagesProvider.provideEmptyMoviesListMessage());
-        progressState.setValue(false);
-    }
-
-    private void onRequestSuccess(MoviesResultResponse<List<Movie>> movies) {
-        moviesState.setValue(movies.getResult());
         progressState.setValue(false);
     }
 

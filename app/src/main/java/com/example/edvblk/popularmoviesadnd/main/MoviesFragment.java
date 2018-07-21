@@ -11,15 +11,12 @@ import android.widget.ProgressBar;
 
 import com.example.edvblk.popularmoviesadnd.R;
 import com.example.edvblk.popularmoviesadnd.base.BaseFragment;
-import com.example.edvblk.popularmoviesadnd.data.database.MovieEntity;
+import com.example.edvblk.popularmoviesadnd.data.pojos.Movie;
 import com.example.edvblk.popularmoviesadnd.details.MovieDetailsActivity;
 import com.example.edvblk.popularmoviesadnd.utils.Notifier;
 import com.example.edvblk.popularmoviesadnd.utils.NotifierImpl;
 import com.example.edvblk.popularmoviesadnd.utils.image.DefaultImageUrlProvider;
 import com.example.edvblk.popularmoviesadnd.utils.image.GlideImageLoader;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 
@@ -43,8 +40,7 @@ public class MoviesFragment extends BaseFragment {
         setHasOptionsMenu(true);
         moviesViewModel.getErrorState().observe(this, notifier::showError);
         moviesViewModel.getProgressState().observe(this, this::showLoadingBar);
-        moviesViewModel.getMoviesState().observe(this, adapter::setItems);
-        moviesViewModel.getFavoritesState().observe(this, adapter::setItems);
+        moviesViewModel.getPopularMoviesState().observe(this, adapter::setItems);
         moviesViewModel.getDetailsState().observe(this, this::showDetailsScreen);
     }
 
@@ -95,11 +91,20 @@ public class MoviesFragment extends BaseFragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_item_highest_rated) {
+            moviesViewModel.getHighestRatedMoviesState().observe(this, adapter::setItems);
+            moviesViewModel.getPopularMoviesState().removeObservers(this);
+            moviesViewModel.getFavoriteMoviesState().removeObservers(this);
             moviesViewModel.loadMoviesByRatings();
         } else if (item.getItemId() == R.id.menu_item_most_popular) {
+            moviesViewModel.getPopularMoviesState().observe(this, adapter::setItems);
+            moviesViewModel.getHighestRatedMoviesState().removeObservers(this);
+            moviesViewModel.getFavoriteMoviesState().removeObservers(this);
             moviesViewModel.loadMoviesByPopularity();
         } else if (item.getItemId() == R.id.menu_item_favorites) {
-            moviesViewModel.loadMoviesFromRepository();
+            moviesViewModel.getFavoriteMoviesState().observe(this, adapter::setItems);
+            moviesViewModel.getPopularMoviesState().removeObservers(this);
+            moviesViewModel.getHighestRatedMoviesState().removeObservers(this);
+            moviesViewModel.loadFavoriteMovies();
         }
         return super.onOptionsItemSelected(item);
     }

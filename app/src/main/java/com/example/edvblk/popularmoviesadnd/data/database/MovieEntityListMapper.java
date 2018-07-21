@@ -1,6 +1,6 @@
 package com.example.edvblk.popularmoviesadnd.data.database;
 
-import com.example.edvblk.popularmoviesadnd.main.Movie;
+import com.example.edvblk.popularmoviesadnd.data.pojos.Movie;
 import com.example.edvblk.popularmoviesadnd.utils.Lists;
 import com.example.edvblk.popularmoviesadnd.utils.Mapper;
 

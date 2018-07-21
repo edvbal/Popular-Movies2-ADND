@@ -1,6 +1,6 @@
 package com.example.edvblk.popularmoviesadnd;
 
-import com.example.edvblk.popularmoviesadnd.main.Movie;
+import com.example.edvblk.popularmoviesadnd.data.pojos.Movie;
 import com.example.edvblk.popularmoviesadnd.main.MoviesViewModel;
 import com.example.edvblk.popularmoviesadnd.utils.MessagesProvider;
 import com.example.edvblk.popularmoviesadnd.utils.network.InternetChecker;
@@ -39,7 +39,7 @@ public class MoviesViewModelTest {
         model = mock(Model.class);
         internetChecker = mock(InternetChecker.class);
         messagesProvider = mock(MessagesProvider.class);
-        presenter = new MoviesViewModel(model, service, internetChecker, messagesProvider, scheduler, movieEntityMapper, asd, mapper);
+        presenter = new MoviesViewModel(service, internetChecker, messagesProvider, scheduler, movieEntityMapper, asd, mapper);
         presenter.takeView(view);
         when(messagesProvider.provideNetworkErrorMessage()).thenReturn(DEFAULT_ERROR_MESSAGE);
         when(messagesProvider.provideEmptyMoviesListMessage()).thenReturn(DEFAULT_ERROR_MESSAGE);

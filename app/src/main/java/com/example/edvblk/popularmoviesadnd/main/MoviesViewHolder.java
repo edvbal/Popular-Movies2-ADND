@@ -5,6 +5,7 @@ import android.widget.ImageView;
 
 import com.example.edvblk.popularmoviesadnd.R;
 import com.example.edvblk.popularmoviesadnd.base.BaseViewHolder;
+import com.example.edvblk.popularmoviesadnd.data.pojos.Movie;
 import com.example.edvblk.popularmoviesadnd.utils.ItemClickListener;
 import com.example.edvblk.popularmoviesadnd.utils.image.ImageLoader;
 import com.example.edvblk.popularmoviesadnd.utils.image.ImageUrlProvider;
