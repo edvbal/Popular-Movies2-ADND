@@ -4,14 +4,12 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
-import com.example.edvblk.popularmoviesadnd.main.Movie;
-
-import java.util.Objects;
-
 @Entity(tableName = "movies")
 public final class MovieEntity {
     @NonNull
     @PrimaryKey
+    private final String id;
+    @NonNull
     private final String title;
     @NonNull
     private final String posterPath;
@@ -23,12 +21,13 @@ public final class MovieEntity {
     private final String overview;
 
     public MovieEntity(
-            String title,
+            @NonNull String id, String title,
             String posterPath,
             String releaseDate,
             double averageVote,
             String overview
     ) {
+        this.id = id;
         this.title = title;
         this.posterPath = posterPath;
         this.releaseDate = releaseDate;
@@ -54,5 +53,10 @@ public final class MovieEntity {
 
     public String getOverview() {
         return overview;
+    }
+
+    @NonNull
+    public String getId() {
+        return id;
     }
 }

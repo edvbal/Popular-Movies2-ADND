@@ -67,15 +67,18 @@ class MovieDetailsViewModel extends ViewModel {
                 .observeOn(scheduler)
                 .flatMap((Mapper<Boolean, SingleSource<?>>) doesMovieExist -> {
                     if (doesMovieExist) {
-                        return movieRepository.deleteMovieFromFavorites(title);
+                        return movieRepository.deleteMovieFromFavorites(movie.toEntity());
                     } else {
                         return movieRepository.insertMovieToFavorites(movie);
                     }
                 }).subscribe(number -> {
-                    if (doesMovieExist) {
-                        movieRepository.removeFromFavorites(title)
+                    if (number instanceof Integer) {
+                        favoriteImageState.postValue(false);
+                        Log.d("tag", "deletered");
+                    } else if (number instanceof Long) {
+                        favoriteImageState.postValue(true);
+                        Log.d("tag", "insertered");
                     }
-                    favoriteImageState.postValue(doesMovieExist)
                 })
         );
 

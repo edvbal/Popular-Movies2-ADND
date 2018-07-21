@@ -7,6 +7,7 @@ import com.example.edvblk.popularmoviesadnd.data.database.MovieEntity;
 import com.google.gson.annotations.SerializedName;
 
 public class Movie implements Parcelable {
+    private final String id;
     @SerializedName("poster_path")
     private final String posterPath;
     @SerializedName("release_date")
@@ -17,12 +18,14 @@ public class Movie implements Parcelable {
     private final String title;
 
     public Movie(
+            String id,
             String posterPath,
             String releaseDate,
             double averageVote,
             String plot,
             String title
     ) {
+        this.id = id;
         this.posterPath = posterPath;
         this.releaseDate = releaseDate;
         this.averageVote = averageVote;
@@ -31,6 +34,7 @@ public class Movie implements Parcelable {
     }
 
     private Movie(Parcel in) {
+        id = in.readString();
         posterPath = in.readString();
         overview = in.readString();
         releaseDate = in.readString();
@@ -49,6 +53,20 @@ public class Movie implements Parcelable {
             return new Movie[size];
         }
     };
+
+    public MovieEntity toEntity() {
+        return new MovieEntity(
+                id, this.title,
+                this.posterPath,
+                this.releaseDate,
+                this.averageVote,
+                this.overview
+        );
+    }
+
+    public String getId() {
+        return id;
+    }
 
     public String getPosterPath() {
         return posterPath;
@@ -77,6 +95,7 @@ public class Movie implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int flags) {
+        parcel.writeString(id);
         parcel.writeString(posterPath);
         parcel.writeString(overview);
         parcel.writeString(releaseDate);

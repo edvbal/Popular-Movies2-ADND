@@ -7,6 +7,7 @@ public class MovieEntityMapper implements Mapper<Movie, MovieEntity> {
     @Override
     public MovieEntity apply(Movie movie) {
         return new MovieEntity(
+                movie.getId(),
                 movie.getTitle(),
                 movie.getPosterPath(),
                 movie.getReleaseDate(),

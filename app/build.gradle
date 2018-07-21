@@ -60,9 +60,10 @@ dependencies {
     annotationProcessor "android.arch.lifecycle:compiler:$androidArchitectureVersion"
     implementation "android.arch.lifecycle:runtime:$androidArchitectureVersion"
 
+    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
+
     implementation "android.arch.persistence.room:runtime:$androidArchitectureVersion"
     annotationProcessor "android.arch.persistence.room:compiler:$androidArchitectureVersion"
-
     implementation "android.arch.persistence.room:runtime:$androidArchitectureVersion"
     implementation "android.arch.persistence.room:rxjava2:$androidArchitectureVersion"
     annotationProcessor "android.arch.persistence.room:compiler:$androidArchitectureVersion"

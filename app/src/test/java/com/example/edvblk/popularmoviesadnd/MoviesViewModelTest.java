@@ -113,7 +113,7 @@ public class MoviesViewModelTest {
 
     @Test
     public void onItemSelected_callView() {
-        Movie movie = new Movie("posterPath", releaseDate, averageVote, overView, title);
+        Movie movie = new Movie(id, "posterPath", releaseDate, averageVote, overView, title);
 
         presenter.onMovieClicked(movie);
 

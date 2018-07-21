@@ -19,5 +19,5 @@ public interface MovieRepository {
 
     Single<Boolean> isMovieInFavorites(String title);
 
-    Single<Integer> deleteMovieFromFavorites(String title);
+    Single<Integer> deleteMovieFromFavorites(MovieEntity movie);
 }

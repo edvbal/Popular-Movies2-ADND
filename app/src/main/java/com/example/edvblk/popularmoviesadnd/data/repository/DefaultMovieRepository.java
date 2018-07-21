@@ -32,8 +32,9 @@ public final class DefaultMovieRepository implements MovieRepository {
 
     @Override
     public Single<Long> insertMovieToFavorites(Movie movie) {
-        return Single.fromCallable(() -> movieDao.insert(movieEntityMapper.apply(movie)))
-                .subscribeOn(scheduler);
+        return Single.fromCallable(
+                () -> movieDao.insert(movieEntityMapper.apply(movie))
+        ).subscribeOn(scheduler);
     }
 
     @Override
@@ -49,7 +50,7 @@ public final class DefaultMovieRepository implements MovieRepository {
     }
 
     @Override
-    public Single<Integer> deleteMovieFromFavorites(String title) {
-        return null;
+    public Single<Integer> deleteMovieFromFavorites(MovieEntity movie) {
+        return Single.fromCallable(() -> movieDao.deleteMovie(movie)).subscribeOn(scheduler);
     }
 }

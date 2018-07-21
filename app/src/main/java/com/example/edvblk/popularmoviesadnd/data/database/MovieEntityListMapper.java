@@ -10,6 +10,7 @@ public class MovieEntityListMapper implements Mapper<List<MovieEntity>, List<Mov
     @Override
     public List<Movie> apply(List<MovieEntity> movieEntities) {
         return Lists.map(movieEntities, movieEntity -> new Movie(
+                movieEntity.getId(),
                 movieEntity.getPosterPath(),
                 movieEntity.getReleaseDate(),
                 movieEntity.getAverageVote(),
