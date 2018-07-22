@@ -23,6 +23,14 @@ public final class MovieReview implements Parcelable{
         url = in.readString();
     }
 
+    public String getAuthor() {
+        return author;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
     public static final Creator<MovieReview> CREATOR = new Creator<MovieReview>() {
         @Override
         public MovieReview createFromParcel(Parcel in) {

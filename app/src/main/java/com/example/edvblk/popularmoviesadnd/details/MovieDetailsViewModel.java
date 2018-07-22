@@ -5,12 +5,16 @@ import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.util.Log;
 
+import com.example.edvblk.popularmoviesadnd.data.pojos.MovieReview;
+import com.example.edvblk.popularmoviesadnd.data.pojos.MovieTrailer;
 import com.example.edvblk.popularmoviesadnd.data.repository.OfflineRepository;
 import com.example.edvblk.popularmoviesadnd.data.pojos.Movie;
 import com.example.edvblk.popularmoviesadnd.data.repository.OnlineRepository;
 import com.example.edvblk.popularmoviesadnd.utils.Mapper;
 import com.example.edvblk.popularmoviesadnd.utils.MessagesProvider;
 import com.example.edvblk.popularmoviesadnd.utils.mvvm.SingleLiveEvent;
+
+import java.util.List;
 
 import io.reactivex.Scheduler;
 import io.reactivex.SingleSource;
@@ -23,9 +27,12 @@ class MovieDetailsViewModel extends ViewModel {
     private final OnlineRepository onlineRepository;
     private final Scheduler scheduler;
     private MutableLiveData<String> errorState = new SingleLiveEvent<>();
-    private MutableLiveData<String> progressState = new SingleLiveEvent<>();
+    private MutableLiveData<Boolean> reviewProgressState = new SingleLiveEvent<>();
+    private MutableLiveData<Boolean> trailersProgressState = new SingleLiveEvent<>();
     private MutableLiveData<Movie> movieDetailsState = new MutableLiveData<>();
     private MutableLiveData<String> favoriteState = new MutableLiveData<>();
+    private MutableLiveData<List<MovieTrailer>> movieTrailersState = new MutableLiveData<>();
+    private MutableLiveData<List<MovieReview>> movieReviewsState = new MutableLiveData<>();
     private MutableLiveData<Boolean> favoriteImageState = new SingleLiveEvent<>();
     private CompositeDisposable disposables = new CompositeDisposable();
 
@@ -46,13 +53,43 @@ class MovieDetailsViewModel extends ViewModel {
         if (movie == null) {
             errorState.setValue(errorMessage);
         } else {
+            int id = movie.getId();
             disposables.add(offlineRepository.isMovieInFavorites(movie.getTitle())
                     .observeOn(scheduler)
                     .subscribe(doesMovieExist -> onDetailsReady(movie, doesMovieExist),
                             throwable -> errorState.postValue(errorMessage)));
-//            disposables.add(onlineRepository.)
+            disposables.add(onlineRepository.getMovieTrailers(id)
+                    .doOnSubscribe(disposable -> reviewProgressState.postValue(true))
+                    .observeOn(scheduler)
+                    .subscribe(this::onMovieTrailersReceived, this::onMovieTrailersRequestError));
+            disposables.add(onlineRepository.getMovieReviews(id)
+                    .doOnSubscribe(disposable -> trailersProgressState.postValue(true))
+                    .observeOn(scheduler)
+                    .subscribe(this::onMovieReviewsReceived, this::onMovieReviewsRequestError));
         }
 
+    }
+
+    private void onMovieReviewsRequestError(Throwable throwable) {
+        Log.e(MovieDetailsViewModel.class.getSimpleName(), throwable.getMessage());
+        reviewProgressState.postValue(false);
+        errorState.postValue(messagesProvider.provideMovieReviewsLoadError());
+    }
+
+    private void onMovieReviewsReceived(List<MovieReview> movieReviews) {
+        reviewProgressState.postValue(false);
+        movieReviewsState.postValue(movieReviews);
+    }
+
+    private void onMovieTrailersRequestError(Throwable throwable) {
+        Log.e(MovieDetailsViewModel.class.getSimpleName(), throwable.getMessage());
+        trailersProgressState.postValue(false);
+        errorState.postValue(messagesProvider.provideMovieTrailersLoadError());
+    }
+
+    private void onMovieTrailersReceived(List<MovieTrailer> movieTrailers) {
+        trailersProgressState.postValue(false);
+        movieTrailersState.postValue(movieTrailers);
     }
 
     private void onDetailsReady(@Nullable Movie movie, Boolean doesMovieExist) {
@@ -70,6 +107,22 @@ class MovieDetailsViewModel extends ViewModel {
 
     public LiveData<String> getFavoriteState() {
         return favoriteState;
+    }
+
+    public LiveData<Boolean> getReviewProgressState() {
+        return reviewProgressState;
+    }
+
+    public LiveData<Boolean> getTrailersProgressState() {
+        return trailersProgressState;
+    }
+
+    public LiveData<List<MovieTrailer>> getMovieTrailersState() {
+        return movieTrailersState;
+    }
+
+    public LiveData<List<MovieReview>> getMovieReviewsState() {
+        return movieReviewsState;
     }
 
     public void onFavoriteSelected(Movie movie) {

@@ -44,4 +44,14 @@ public class MessagesProviderImpl implements MessagesProvider {
     public String provideMovieAlreadyFavoriteMessage() {
         return resources.getString(R.string.error_repository_write_success);
     }
+
+    @Override
+    public String provideMovieTrailersLoadError() {
+        return resources.getString(R.string.error_could_not_load_trailers);
+    }
+
+    @Override
+    public String provideMovieReviewsLoadError() {
+        return resources.getString(R.string.error_could_not_load_reviews);
+    }
 }

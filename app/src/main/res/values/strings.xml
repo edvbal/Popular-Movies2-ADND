@@ -10,4 +10,8 @@
     <string name="main_menu_title_rated">Highest rated</string>
     <string name="main_menu_title_popular">Most popular</string>
     <string name="main_menu_title_favorites">Favorites</string>
+    <string name="error_could_not_load_trailers">Could not load movie trailers</string>
+    <string name="error_could_not_load_reviews">Could not load movie reviews</string>
+    <string name="details_label_reviews">Reviews</string>
+    <string name="details_label_trailers">Trailers</string>
 </resources>

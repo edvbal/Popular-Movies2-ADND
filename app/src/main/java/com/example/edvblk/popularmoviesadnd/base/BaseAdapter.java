@@ -29,6 +29,10 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<BaseViewHolder
         notifyDataSetChanged();
     }
 
+    public T getItemAt(int position){
+        return items.get(position);
+    }
+
     private void updateItems(List<? extends T> newItems) {
         items.clear();
         items.addAll(newItems);

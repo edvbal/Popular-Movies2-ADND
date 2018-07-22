@@ -7,24 +7,33 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.edvblk.popularmoviesadnd.data.pojos.Movie;
 import com.example.edvblk.popularmoviesadnd.R;
 import com.example.edvblk.popularmoviesadnd.base.BaseActivity;
+import com.example.edvblk.popularmoviesadnd.data.pojos.MovieReview;
+import com.example.edvblk.popularmoviesadnd.data.pojos.MovieTrailer;
+import com.example.edvblk.popularmoviesadnd.details.recycler.OnTrailerClick;
+import com.example.edvblk.popularmoviesadnd.details.recycler.ReviewAdapter;
+import com.example.edvblk.popularmoviesadnd.details.recycler.TrailerAdapter;
 import com.example.edvblk.popularmoviesadnd.utils.Notifier;
 import com.example.edvblk.popularmoviesadnd.utils.NotifierImpl;
 import com.example.edvblk.popularmoviesadnd.utils.image.DefaultImageUrlProvider;
 import com.example.edvblk.popularmoviesadnd.utils.image.GlideImageLoader;
 import com.example.edvblk.popularmoviesadnd.utils.image.ImageUrlProvider;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.OnClick;
 
-public class MovieDetailsActivity extends BaseActivity {
+public class MovieDetailsActivity extends BaseActivity implements OnTrailerClick {
     public static final String INTENT_EXTRA_KEY_MOVIE = "key.movies";
     @BindView(R.id.collapsingToolbar)
     CollapsingToolbarLayout collapsingToolbar;
@@ -40,9 +49,19 @@ public class MovieDetailsActivity extends BaseActivity {
     TextView releaseDateTextView;
     @BindView(R.id.averageVoteTextView)
     TextView averageVoteTextView;
+    @BindView(R.id.reviewsProgressBar)
+    ProgressBar reviewsProgressBar;
+    @BindView(R.id.trailersProgressBar)
+    ProgressBar trailersProgressBar;
+    @BindView(R.id.reviewsRecyclerView)
+    RecyclerView reviewsRecyclerView;
+    @BindView(R.id.trailersRecyclerView)
+    RecyclerView trailersRecyclerView;
     private GlideImageLoader imageLoader;
     private MovieDetailsViewModel detailsViewModel;
     private Notifier notifier;
+    private ReviewAdapter reviewAdapter;
+    private TrailerAdapter trailerAdapter;
 
     public static void start(Context context, Movie movie) {
         Intent starter = new Intent(context, MovieDetailsActivity.class);
@@ -60,11 +79,30 @@ public class MovieDetailsActivity extends BaseActivity {
         detailsViewModel.getErrorState().observe(this, notifier::showError);
         detailsViewModel.getFavoriteState().observe(this, notifier::showSuccess);
         detailsViewModel.getFavoriteImageState().observe(this, this::setFavoriteImageView);
+        detailsViewModel.getReviewProgressState().observe(this, this::setReviewProgress);
+        detailsViewModel.getTrailersProgressState().observe(this, this::setTrailersProgress);
+        detailsViewModel.getMovieReviewsState().observe(this, reviewAdapter::setItems);
+        detailsViewModel.getMovieTrailersState().observe(this, trailerAdapter::setItems);
         Bundle extras = getIntent().getExtras();
         if (extras != null && savedInstanceState == null) {
             detailsViewModel.onMovieSelected((Movie) extras.get(INTENT_EXTRA_KEY_MOVIE));
         }
-//        mActivity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v=" + video.getKey())))
+    }
+
+    private void setTrailersProgress(Boolean isProgress) {
+        setProgress(isProgress, trailersProgressBar);
+    }
+
+    private void setReviewProgress(Boolean isProgress) {
+        setProgress(isProgress, reviewsProgressBar);
+    }
+
+    private void setProgress(Boolean isProgress, ProgressBar progressBar) {
+        if (isProgress) {
+            progressBar.setProgress(View.VISIBLE);
+        } else {
+            progressBar.setProgress(View.GONE);
+        }
     }
 
     private void setFavoriteImageView(Boolean isFavorited) {
@@ -91,6 +129,20 @@ public class MovieDetailsActivity extends BaseActivity {
         MovieDetailsViewModelFactory viewModelFactory = new MovieDetailsViewModelFactory(this);
         detailsViewModel = ViewModelProviders.of(this, viewModelFactory)
                 .get(MovieDetailsViewModel.class);
+        setReviewRecycler();
+        setTrailerRecycler();
+    }
+
+    private void setTrailerRecycler() {
+        trailerAdapter = new TrailerAdapter(this);
+        trailersRecyclerView.setHasFixedSize(true);
+        trailersRecyclerView.setAdapter(trailerAdapter);
+    }
+
+    private void setReviewRecycler() {
+        reviewAdapter = new ReviewAdapter();
+        reviewsRecyclerView.setHasFixedSize(true);
+        reviewsRecyclerView.setAdapter(reviewAdapter);
     }
 
     private void showMovieDetails(Movie movie) {
@@ -110,5 +162,13 @@ public class MovieDetailsActivity extends BaseActivity {
         int widthPixels = getResources().getDisplayMetrics().widthPixels;
         ImageUrlProvider provider = new DefaultImageUrlProvider(widthPixels);
         imageLoader.loadImageFromUrl(posterImageView, provider.provideUrl(url));
+    }
+
+    @Override
+    public void onTrailerClicked(int trailerPosition) {
+        MovieTrailer trailer = trailerAdapter.getItemAt(trailerPosition);
+        startActivity(new Intent(
+                Intent.ACTION_VIEW,
+                Uri.parse("http://www.youtube.com/watch?v=" + trailer.getKey())));
     }
 }

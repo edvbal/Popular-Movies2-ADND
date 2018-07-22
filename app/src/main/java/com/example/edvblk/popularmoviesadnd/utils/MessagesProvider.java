@@ -14,4 +14,8 @@ public interface MessagesProvider {
     String provideRepoWriteSuccessMessage();
 
     String provideMovieAlreadyFavoriteMessage();
+
+    String provideMovieTrailersLoadError();
+
+    String provideMovieReviewsLoadError();
 }

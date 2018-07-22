@@ -7,4 +7,5 @@
     <color name="error_red">#F44336</color>
     <color name="success_green">#64dd17</color>
     <color name="transparentWhite">#00FFFFFF</color>
+    <color name="clickableText">#0000FF</color>
 </resources>

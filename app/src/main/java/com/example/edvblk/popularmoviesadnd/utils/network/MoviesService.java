@@ -3,7 +3,7 @@ package com.example.edvblk.popularmoviesadnd.utils.network;
 import com.example.edvblk.popularmoviesadnd.BuildConfig;
 import com.example.edvblk.popularmoviesadnd.data.pojos.Movie;
 import com.example.edvblk.popularmoviesadnd.data.pojos.MovieReview;
-import com.example.edvblk.popularmoviesadnd.data.pojos.MovieVideo;
+import com.example.edvblk.popularmoviesadnd.data.pojos.MovieTrailer;
 
 import java.util.List;
 
@@ -18,9 +18,9 @@ public interface MoviesService {
     @GET(BuildConfig.HIGHEST_RATED_MOVIES)
     Single<MoviesResultResponse<List<Movie>>> getHighestRatedMovies();
 
-    @GET("/movie/{id}/videos")
-    Single<MoviesResultResponse<List<MovieVideo>>> getMovieVideos(@Path("id") int id);
+    @GET("{id}/videos")
+    Single<MoviesResultResponse<List<MovieTrailer>>> getMovieTrailers(@Path("id") int id);
 
-    @GET("/movie/{id}/reviews")
+    @GET("{id}/reviews")
     Single<MoviesResultResponse<List<MovieReview>>> getMovieReviews(@Path("id") int id);
 }

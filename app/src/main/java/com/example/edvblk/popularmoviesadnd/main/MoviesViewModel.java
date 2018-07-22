@@ -90,6 +90,7 @@ public class MoviesViewModel extends ViewModel {
         }
         disposables.add(onlineRepository.getPopularMovies()
                 .observeOn(scheduler)
+                .doOnSubscribe(disposable -> progressState.postValue(true))
                 .subscribe(this::onPopularMoviesRequestSuccess, this::onRequestError));
     }
 
@@ -100,6 +101,7 @@ public class MoviesViewModel extends ViewModel {
         }
         disposables.add(onlineRepository.getHighestRatedMovies()
                 .observeOn(scheduler)
+                .doOnSubscribe(disposable -> progressState.postValue(true))
                 .subscribe(this::onHighestRatedMoviesRequestSuccess, this::onRequestError));
     }
 

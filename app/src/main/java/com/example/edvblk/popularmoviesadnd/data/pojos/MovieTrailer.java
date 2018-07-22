@@ -5,7 +5,7 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
-public final class MovieVideo implements Parcelable {
+public final class MovieTrailer implements Parcelable {
     public static final String SITE_YOUTUBE = "YouTube";
     public static final String TYPE_TRAILER = "Trailer";
 
@@ -18,7 +18,7 @@ public final class MovieVideo implements Parcelable {
     private final int size;
     private final String type;
 
-    private MovieVideo(Parcel in) {
+    private MovieTrailer(Parcel in) {
         id = in.readString();
         iso = in.readString();
         key = in.readString();
@@ -28,15 +28,23 @@ public final class MovieVideo implements Parcelable {
         type = in.readString();
     }
 
-    public static final Creator<MovieVideo> CREATOR = new Creator<MovieVideo>() {
+    public String getName() {
+        return name;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public static final Creator<MovieTrailer> CREATOR = new Creator<MovieTrailer>() {
         @Override
-        public MovieVideo createFromParcel(Parcel in) {
-            return new MovieVideo(in);
+        public MovieTrailer createFromParcel(Parcel in) {
+            return new MovieTrailer(in);
         }
 
         @Override
-        public MovieVideo[] newArray(int size) {
-            return new MovieVideo[size];
+        public MovieTrailer[] newArray(int size) {
+            return new MovieTrailer[size];
         }
     };
 
