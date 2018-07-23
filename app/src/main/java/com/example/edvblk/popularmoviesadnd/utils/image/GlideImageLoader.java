@@ -7,6 +7,9 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
+
 public class GlideImageLoader implements ImageLoader {
     private final RequestManager requestManager;
 
@@ -18,6 +21,7 @@ public class GlideImageLoader implements ImageLoader {
     public void loadImageFromUrl(View view, String url) {
         requestManager
                 .load(url)
+                .apply(new RequestOptions().override(Target.SIZE_ORIGINAL))
                 .into((ImageView) view);
     }
 
