@@ -38,11 +38,22 @@ public class MessagesProviderImpl implements MessagesProvider {
 
     @Override
     public String provideRepoWriteSuccessMessage() {
-        return resources.getString(R.string.error_repository_write_success);
+        return resources.getString(R.string.repository_write_success);
     }
+
+    @Override
+    public String provideRepositoryDeleteSuccessMessage() {
+        return resources.getString(R.string.repository_delete_success);
+    }
+
+    @Override
+    public String provideRepositoryDeleteError() {
+        return resources.getString(R.string.error_movie_can_not_be_deleted);
+    }
+
     @Override
     public String provideMovieAlreadyFavoriteMessage() {
-        return resources.getString(R.string.error_repository_write_success);
+        return resources.getString(R.string.error_movie_already_favorite);
     }
 
     @Override

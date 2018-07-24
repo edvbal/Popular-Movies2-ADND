@@ -21,7 +21,12 @@ import io.reactivex.Scheduler;
 import io.reactivex.disposables.CompositeDisposable;
 
 public class MoviesViewModel extends ViewModel {
-    public static final String CLASS_TAG = MoviesViewModel.class.getSimpleName();
+    public static final String SORT_CONFIG_POPULARITY = "key.sortPopularity";
+    public static final String SORT_CONFIG_RATINGS = "key.sortRatings";
+    public static final String SORT_CONFIG_FAVORITES = "key.sortFavorites";
+    public static final String DEFAULT_SORT_CONFIG = SORT_CONFIG_POPULARITY;
+    private static final String CLASS_TAG = MoviesViewModel.class.getSimpleName();
+
     private final InternetChecker internetChecker;
     private final MessagesProvider messagesProvider;
     private final Scheduler scheduler;
@@ -51,7 +56,6 @@ public class MoviesViewModel extends ViewModel {
         this.offlineRepository = offlineRepository;
         this.onlineRepository = onlineRepository;
         this.entityMapper = entityMapper;
-        loadMoviesByPopularity();
     }
 
     public LiveData<String> getErrorState() {
@@ -83,7 +87,21 @@ public class MoviesViewModel extends ViewModel {
         disposables.dispose();
     }
 
-    public void loadMoviesByPopularity() {
+    public void loadMovies(String sortKey) {
+        switch (sortKey) {
+            case SORT_CONFIG_RATINGS:
+                loadMoviesByRatings();
+                break;
+            case SORT_CONFIG_POPULARITY:
+                loadMoviesByPopularity();
+                break;
+            case SORT_CONFIG_FAVORITES:
+                loadFavoriteMovies();
+                break;
+        }
+    }
+
+    private void loadMoviesByPopularity() {
         if (!internetChecker.isInternetAvailable()) {
             errorState.setValue(messagesProvider.provideNetworkErrorMessage());
             return;
@@ -94,7 +112,7 @@ public class MoviesViewModel extends ViewModel {
                 .subscribe(this::onPopularMoviesRequestSuccess, this::onRequestError));
     }
 
-    public void loadMoviesByRatings() {
+    private void loadMoviesByRatings() {
         if (!internetChecker.isInternetAvailable()) {
             errorState.setValue(messagesProvider.provideNetworkErrorMessage());
             return;
@@ -105,7 +123,7 @@ public class MoviesViewModel extends ViewModel {
                 .subscribe(this::onHighestRatedMoviesRequestSuccess, this::onRequestError));
     }
 
-    public void loadFavoriteMovies() {
+    private void loadFavoriteMovies() {
         disposables.add(offlineRepository.getMovies()
                 .observeOn(scheduler)
                 .doOnSubscribe(disposable -> progressState.postValue(true))

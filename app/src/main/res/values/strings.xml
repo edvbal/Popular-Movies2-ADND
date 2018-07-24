@@ -4,14 +4,16 @@
     <string name="error_empty_movies_list">Couldn\'t load movie list from server</string>
     <string name="error_repository_write_failure">Couldn\'t save favorite in the database</string>
     <string name="error_repository_read_failure">Couldn\'t retrieve favorite movies from the database</string>
-    <string name="error_repository_write_success">Movie successfully put in the favorites</string>
     <string name="error_movie_already_favorite">Movie is already in favorites</string>
+    <string name="error_movie_can_not_be_deleted">Movie could not be deleted from favorites</string>
     <string name="error_empty_movie_details">Couldn\'t load movie details</string>
+    <string name="error_could_not_load_trailers">Could not load movie trailers</string>
+    <string name="error_could_not_load_reviews">Could not load movie reviews</string>
+    <string name="repository_write_success">Movie successfully put in the favorites</string>
+    <string name="repository_delete_success">Movie successfully deleted from favorites</string>
     <string name="main_menu_title_rated">Highest rated</string>
     <string name="main_menu_title_popular">Most popular</string>
     <string name="main_menu_title_favorites">Favorites</string>
-    <string name="error_could_not_load_trailers">Could not load movie trailers</string>
-    <string name="error_could_not_load_reviews">Could not load movie reviews</string>
     <string name="details_label_reviews">Reviews</string>
     <string name="details_label_trailers">Trailers</string>
 </resources>

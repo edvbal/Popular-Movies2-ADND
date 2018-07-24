@@ -30,10 +30,10 @@ class MovieDetailsViewModel extends ViewModel {
     private MutableLiveData<Boolean> reviewProgressState = new SingleLiveEvent<>();
     private MutableLiveData<Boolean> trailersProgressState = new SingleLiveEvent<>();
     private MutableLiveData<Movie> movieDetailsState = new MutableLiveData<>();
-    private MutableLiveData<String> favoriteState = new MutableLiveData<>();
+    private MutableLiveData<String> favoriteState = new SingleLiveEvent<>();
     private MutableLiveData<List<MovieTrailer>> movieTrailersState = new MutableLiveData<>();
     private MutableLiveData<List<MovieReview>> movieReviewsState = new MutableLiveData<>();
-    private MutableLiveData<Boolean> favoriteImageState = new SingleLiveEvent<>();
+    private MutableLiveData<Boolean> favoriteImageState = new MutableLiveData<>();
     private CompositeDisposable disposables = new CompositeDisposable();
 
     MovieDetailsViewModel(
@@ -67,7 +67,6 @@ class MovieDetailsViewModel extends ViewModel {
                     .observeOn(scheduler)
                     .subscribe(this::onMovieReviewsReceived, this::onMovieReviewsRequestError));
         }
-
     }
 
     private void onMovieReviewsRequestError(Throwable throwable) {
@@ -137,34 +136,29 @@ class MovieDetailsViewModel extends ViewModel {
                     }
                 }).subscribe(number -> {
                     if (number instanceof Integer) {
-                        favoriteImageState.postValue(false);
-                        Log.d("tag", "deletered");
+                        String successMessage = messagesProvider.provideRepositoryDeleteSuccessMessage();
+                        String errorMessage = messagesProvider.provideRepositoryDeleteError();
+                        handleFavoriteMoviesChange((long) number, successMessage, errorMessage, false);
                     } else if (number instanceof Long) {
-                        favoriteImageState.postValue(true);
-                        Log.d("tag", "insertered");
+                        String successMessage = messagesProvider.provideRepoWriteSuccessMessage();
+                        String errorMessage = messagesProvider.provideRepoWriteFailureMessage();
+                        handleFavoriteMoviesChange((long) number, successMessage, errorMessage, true);
                     }
                 })
         );
-
-        disposables.add(offlineRepository.insertMovieToFavorites(movie)
-                .observeOn(scheduler)
-                .subscribe(this::onInsertSuccess, this::onInsertError)
-        );
     }
 
-    private void onInsertError(Throwable throwable) {
-        Log.e(MovieDetailsViewModel.class.getSimpleName(), throwable.getMessage());
-        String message = messagesProvider.provideRepoWriteFailureMessage();
-        errorState.postValue(message);
-    }
-
-    private void onInsertSuccess(Long insertedCount) {
-        if (insertedCount > 0) {
-            String message = messagesProvider.provideRepoWriteSuccessMessage();
-            favoriteState.postValue(message);
+    private void handleFavoriteMoviesChange(
+            long itemCount,
+            String successMessage,
+            String errorMessage,
+            boolean isInsertion
+    ) {
+        if (itemCount > 0) {
+            favoriteState.postValue(successMessage);
+            favoriteImageState.postValue(isInsertion);
         } else {
-            String message = messagesProvider.provideMovieAlreadyFavoriteMessage();
-            errorState.postValue(message);
+            favoriteState.postValue(errorMessage);
         }
     }
 

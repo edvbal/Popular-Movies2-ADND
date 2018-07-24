@@ -13,6 +13,10 @@ public interface MessagesProvider {
 
     String provideRepoWriteSuccessMessage();
 
+    String provideRepositoryDeleteSuccessMessage();
+
+    String provideRepositoryDeleteError();
+
     String provideMovieAlreadyFavoriteMessage();
 
     String provideMovieTrailersLoadError();
