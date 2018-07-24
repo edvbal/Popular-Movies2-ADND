@@ -138,27 +138,27 @@ class MovieDetailsViewModel extends ViewModel {
                     if (number instanceof Integer) {
                         String successMessage = messagesProvider.provideRepositoryDeleteSuccessMessage();
                         String errorMessage = messagesProvider.provideRepositoryDeleteError();
-                        handleFavoriteMoviesChange((long) number, successMessage, errorMessage, false);
+                        handleFavoriteMoviesChange(number.toString(), successMessage, errorMessage, false);
                     } else if (number instanceof Long) {
                         String successMessage = messagesProvider.provideRepoWriteSuccessMessage();
                         String errorMessage = messagesProvider.provideRepoWriteFailureMessage();
-                        handleFavoriteMoviesChange((long) number, successMessage, errorMessage, true);
+                        handleFavoriteMoviesChange(number.toString(), successMessage, errorMessage, true);
                     }
                 })
         );
     }
 
     private void handleFavoriteMoviesChange(
-            long itemCount,
+            String itemCount,
             String successMessage,
             String errorMessage,
             boolean isInsertion
     ) {
-        if (itemCount > 0) {
+        if (itemCount.equals("0")) {
+            favoriteState.postValue(errorMessage);
+        } else {
             favoriteState.postValue(successMessage);
             favoriteImageState.postValue(isInsertion);
-        } else {
-            favoriteState.postValue(errorMessage);
         }
     }
 
