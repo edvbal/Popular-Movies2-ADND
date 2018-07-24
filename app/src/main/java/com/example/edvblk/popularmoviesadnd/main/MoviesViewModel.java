@@ -56,6 +56,7 @@ public class MoviesViewModel extends ViewModel {
         this.offlineRepository = offlineRepository;
         this.onlineRepository = onlineRepository;
         this.entityMapper = entityMapper;
+        loadMovies(DEFAULT_SORT_CONFIG);
     }
 
     public LiveData<String> getErrorState() {
